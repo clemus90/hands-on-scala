@@ -1,15 +1,12 @@
 class ImmutableTrie(strs: Seq[String]) { trie => 
-  class Node(val hasValue: Boolean, val children: Map[Char, Node])
+  case class Node(val hasValue: Boolean, val children: Map[Char, Node])
   object Node {
     def fromString(str: Seq[Char], original: Option[Node]): Node = {
       val originalChildren = original.map(_.children).getOrElse(Map())
       val originalHasValue = original.map(_.hasValue).getOrElse(false)
       str match {
         case Nil => new Node(true, originalChildren)
-        case head :: tail => originalChildren.get(head) match {
-          case None => new Node(originalHasValue, originalChildren ++ Map(head -> fromString(tail, None)))
-          case sn => new Node(originalHasValue, Map(head -> fromString(tail, sn)))
-        }
+        case head :: tail => new Node(originalHasValue, originalChildren ++ Map(head -> fromString(tail, originalChildren.get(head))))
       }
     }
   }
